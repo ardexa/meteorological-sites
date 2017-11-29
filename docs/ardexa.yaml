@@ -1,0 +1,119 @@
+meteo_fields: &meteo_fields
+  - name: datetime
+    expect: date
+  - name: website
+    expect: keyword
+  - name: station ID
+    expect: keyword
+  - name: station name
+    expect: keyword
+  - meta:
+      units: C
+    name: temperature
+    expect: decimal
+  - meta:
+      units: '%'
+    name: humidity
+    expect: decimal
+  - meta:
+      units: km/h
+    name: wind speed
+    expect: decimal
+  - meta:
+      units: degrees
+    name: wind direction
+    expect: decimal
+  - meta:
+      units: hPa
+    name: pressure
+    expect: decimal
+  - meta:
+      units: W/m^2
+    name: solar insolation
+    expect: decimal
+  - meta:
+      units: mm
+    name: rainfall
+    expect: decimal
+
+unix_socket: []
+tail:
+  - table: meteoclimatic
+    source: weather-01
+    file: /opt/meteoclimatic/ESAND1800000018110A/latest.csv
+    expect: csv
+    fields: *meteo_fields
+  - table: meteoclimatic
+    source: weather-02
+    file: /opt/meteoclimatic/ESAND1800000018220A/latest.csv
+    expect: csv
+    fields: *meteo_fields
+  - table: meteoclimatic
+    source: weather-03
+    file: /opt/meteoclimatic/ESAND4100000041960A/latest.csv
+    expect: csv
+    fields: *meteo_fields
+  - table: meteoclimatic
+    source: weather-04
+    file: /opt/meteoclimatic/ESMUR3000000030140A/latest.csv
+    expect: csv
+    fields: *meteo_fields
+  - table: meteoclimatic
+    source: weather-05
+    file: /opt/meteoclimatic/ESPVA0300000003204A/latest.csv
+    expect: csv
+    fields: *meteo_fields
+watch:
+  - attach: 'true'
+    check: hash
+    table: data
+    source: photojpg
+    file: /tmp/picture.jpg
+amqp:
+  keyfile: /etc/ardexa/keys/client.key
+  cacertfile: /etc/ardexa/keys/Ardexa CA chain - amqps.crt
+  certfile: /etc/ardexa/keys/client.crt
+  vhost: {YOUR-HOST}
+  hostname: broker.ardexa.com
+stdout: false
+debug: 0
+timezone: Etc/UTC
+run:
+  - command: >-
+      python /home/ardexa/meteoclimatic.py ESAND1800000018110A hijar /opt/meteoclimatic 0
+    table: data
+    source: met-cmd1
+    frequency: 300
+    expect: keyword
+  - command: >-
+      python /home/ardexa/meteoclimatic.py ESAND1800000018220A albolote /opt/meteoclimatic 0
+    table: data
+    source: met-cmd2
+    frequency: 300
+    expect: keyword
+  - command: >-
+      python /home/ardexa/meteoclimatic.py ESAND4100000041960A gines /opt/meteoclimatic 0
+    table: data
+    source: met-cmd3
+    frequency: 300
+    expect: keyword
+  - command: >-
+      python /home/ardexa/meteoclimatic.py ESMUR3000000030140A santomera /opt/meteoclimatic 0
+    table: data
+    source: met-cmd4
+    frequency: 300
+    expect: keyword
+  - command: >-
+      python /home/ardexa/meteoclimatic.py ESPVA0300000003204A elche /opt/meteoclimatic 0
+    table: data
+    source: met-cmd5
+    frequency: 300
+    expect: keyword
+  - command: 'top -b -n2 | grep "Cpu(s)"|tail -n 1 | awk ''{print $2 + $4}'''
+    source: cpu_usage
+    frequency: 30
+    table: data
+    expect: decimal
+    meta:
+      comment: measures cpu usage
+      units: percentage
