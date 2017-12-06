@@ -96,12 +96,6 @@ def convert_values(raw_dict, station_id, station_name):
 
 #~~~~~~~~~~~~~~~~~~  End Functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-# Check script is run as root
-if os.geteuid() != 0:
-	print "You need to have root privileges to run this script, or as \'sudo\'. Exiting."
-	sys.exit(2)
-
 # Check the arguments
 arguments = check_args(4)
 if (len(arguments) < 4):

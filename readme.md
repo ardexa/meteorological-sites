@@ -14,7 +14,7 @@ Then install and run it as follows:
 cd
 git clone https://github.com/ardexa/meteorological-sites.git
 cd meteorological-sites
-sudo python meteoclimatic.py {STATION ID} {STATION NAME} {log directory} {debug type}  .... example: sudo python meteoclimatic.py ESAND1800000018110A spain-albolote /opt/data 0
+python meteoclimatic.py {STATION ID} {STATION NAME} {log directory} {debug type}  .... example: sudo python meteoclimatic.py ESAND1800000018110A spain-albolote /opt/data 0
 ```
 
 ## Meteorological Sites
